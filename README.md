@@ -45,6 +45,10 @@ The published package ships prebuilt native artifacts for **macOS arm64** (`buil
 
 To install from source or contribute, see [Development Installation](#development-installation) below.
 
+## Compatible upstream
+
+This release targets Apple’s [python-apple-fm-sdk](https://github.com/apple/python-apple-fm-sdk) **v0.2.1** plus commit `e868e60811aa0706feb2ccb33cfe7e27626287b7` (composed_prompt cleanup, PR #18). The C ABI comes from the vendored submodule at `reference/python-apple-fm-sdk/foundation-models-c`. See [reference/UPSTREAM.md](reference/UPSTREAM.md).
+
 ## Documentation
 
 - [Python SDK documentation](https://apple.github.io/python-apple-fm-sdk/) (the TypeScript API follows the same structure)
@@ -232,10 +236,12 @@ git clone https://github.com/tariqwest/javascript-apple-fm-sdk
 cd javascript-apple-fm-sdk
 ```
 
-2. Install dependencies and build all artifacts
+2. Initialize the upstream submodule, install dependencies, and build
 
 ```bash
+git submodule update --init --recursive
 bun install
+bun run verify:headers
 bun run build:all
 ```
 

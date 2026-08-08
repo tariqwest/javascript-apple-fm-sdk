@@ -4,6 +4,18 @@ JavaScript/TypeScript SDK for Apple's on-device Foundation Models (SystemLanguag
 
 > For a detailed readout of how this project was planned and executed, see [.agents/implementation-readout.md](.agents/implementation-readout.md). This file is for quick project context only.
 
+## Upstream pin
+
+Compatible with **apple/python-apple-fm-sdk** `v0.2.1` + #18 (`e868e60811aa0706feb2ccb33cfe7e27626287b7`).
+
+```bash
+git submodule update --init --recursive
+bun run verify:headers
+```
+
+Details: [reference/UPSTREAM.md](reference/UPSTREAM.md).
+
+
 ## Build Commands
 
 ```bash
