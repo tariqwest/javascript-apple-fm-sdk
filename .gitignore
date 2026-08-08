@@ -11,8 +11,11 @@ apple-fm-sdk-*.tgz
 # Rust N-API build artifacts
 native/target/
 
-# Reference codebases (cloned externally)
-reference/
+# Reference codebases (local clones). Keep the python-apple-fm-sdk submodule trackable.
+/reference/*
+!/reference/python-apple-fm-sdk
+!/reference/README.md
+!/reference/UPSTREAM.md
 
 # Devin handoff documents
 .agents/handoffs/

@@ -1,0 +1,3 @@
+[submodule "reference/python-apple-fm-sdk"]
+	path = reference/python-apple-fm-sdk
+	url = https://github.com/apple/python-apple-fm-sdk.git
