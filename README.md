@@ -1,20 +1,25 @@
-# Foundation Models SDK for TypeScript
+# Foundation Models SDK for JavaScript & TypeScript
 
-TypeScript bindings for Apple's [Foundation Models framework](https://developer.apple.com/documentation/foundationmodels), providing access to the on-device foundation model at the core of Apple Intelligence on macOS.
+JavaScript and TypeScript bindings for Apple's [Foundation Models framework](https://developer.apple.com/documentation/foundationmodels), providing access to the on-device foundation model at the core of Apple Intelligence on macOS.
 
-This SDK is a near 1-to-1 TypeScript translation of Apple's [Python Foundation Models SDK](https://github.com/apple/python-apple-fm-sdk), adapted for TypeScript/Bun idioms.
+This SDK is a near 1-to-1 translation of Apple's [Python Foundation Models SDK](https://github.com/apple/python-apple-fm-sdk), adapted for modern JS runtimes (**Bun** and **Node.js**).
+
+- **TypeScript** is first-class (source is `.ts`, published types in `dist/`).
+- **JavaScript** consumers import the same package from npm (compiled ESM in `dist/`).
+- **Node without a prior `tsc` build:** run TypeScript sources directly with [tsx](https://tsx.is/) (`bun run start:node`, `bun run example:node`).
+- **Bun** is the primary dev toolchain for install, test, and native builds.
 
 ## Overview
 
-The Foundation Models SDK for TypeScript provides a typed, async interface to Apple's Foundation Models framework.
+The SDK provides a typed, async interface to Apple's Foundation Models framework from JavaScript or TypeScript.
 
 You can:
 
-- **Evaluate Swift Foundation Models app features** by running batch inference and analyzing results from TypeScript
+- **Evaluate Swift Foundation Models app features** by running batch inference and analyzing results from JS/TS
 - Perform **on-device inference** with the system foundation model
 - Stream **real-time text generation** responses
 - Use **guided generation** with structured output schemas and Zod constraints
-- Get **type-safe responses** by defining generation schemas with Zod
+- Get **type-safe responses** in TypeScript by defining generation schemas with Zod (plain JS works too—you just won't get compile-time types)
 - Configure **custom model settings** for different model options and generation parameters
 - Define **tools** the model can call during a conversation
 - Process **transcripts exported from Swift apps** for quality analysis
@@ -27,8 +32,8 @@ and Apple's [Human Interface Guidelines on Generative AI](https://developer.appl
 ## Requirements
 
 - macOS 26.0+
-- Download [Xcode 26.0+](https://developer.apple.com/xcode/) and agree to the [Xcode and Apple SDKs agreement](https://www.apple.com/legal/sla/docs/xcode.pdf) in the Xcode app.
-- [Bun](https://bun.sh/) 1.0+
+- Download [Xcode 26.0+](https://developer.apple.com/xcode/) and agree to the [Xcode and Apple SDKs agreement](https://www.apple.com/legal/sla/docs/xcode.pdf) in the Xcode app (needed to build native artifacts from source).
+- [Bun](https://bun.sh/) 1.0+ **or** [Node.js](https://nodejs.org/) 18+ (with [tsx](https://tsx.is/) if you want to run `.ts` sources without compiling)
 - Apple Intelligence turned on for [a compatible Mac](https://support.apple.com/en-us/121115)
 
 ## Installation
@@ -36,12 +41,24 @@ and Apple's [Human Interface Guidelines on Generative AI](https://developer.appl
 ```bash
 npm install javascript-apple-fm-sdk
 # or
+pnpm add javascript-apple-fm-sdk
+# or
 bun add javascript-apple-fm-sdk
 ```
 
-The published package ships prebuilt native artifacts for **macOS arm64** (`build/libFoundationModels.dylib` and `build/apple_fm_sdk_napi.node`). No postinstall build step is required on supported platforms.
+The published package ships prebuilt native artifacts for **macOS arm64** (`build/libFoundationModels.dylib` and `build/apple_fm_sdk_napi.node`) plus compiled JS and `.d.ts` types under `dist/`. No postinstall build step is required on supported platforms.
 
 > **Platform support:** macOS 26+ on Apple Silicon only. The package declares `os: ["darwin"]` and `cpu: ["arm64"]` so npm will warn on unsupported platforms.
+
+### Runtime choices
+
+| Use case | How |
+|----------|-----|
+| App / library dependency (JS or TS) | `import fm from 'javascript-apple-fm-sdk'` — uses published `dist/` |
+| Bun (dev or prod) | Same import; Bun runs the package natively |
+| Node + published package | Same import under Node 18+ (loads the N-API `.node` addon) |
+| Node + local TypeScript sources (no `tsc`) | `npx tsx path/to/file.ts` or repo scripts `bun run start:node` / `bun run example:node` |
+| Bun + local TypeScript sources | `bun run src/...` or `bun run start` / `bun run example` |
 
 To install from source or contribute, see [Development Installation](#development-installation) below.
 
@@ -51,8 +68,10 @@ This release targets Apple’s [python-apple-fm-sdk](https://github.com/apple/py
 
 ## Documentation
 
-- [Python SDK documentation](https://apple.github.io/python-apple-fm-sdk/) (the TypeScript API follows the same structure)
-- [Python code examples](https://github.com/apple/python-apple-fm-sdk/tree/main/examples) (concepts translate directly to TypeScript)
+- [Python SDK documentation](https://apple.github.io/python-apple-fm-sdk/) (the JS/TS API follows the same structure)
+- [Python code examples](https://github.com/apple/python-apple-fm-sdk/tree/main/examples) (concepts translate directly to JavaScript/TypeScript)
+
+Examples below are written in TypeScript. They run as-is under Bun or Node+tsx, and the same API is available from plain JavaScript via the published package.
 
 ## Basic usage
 
@@ -103,7 +122,7 @@ if (isAvailable) {
 
 ### Guided generation
 
-The TypeScript SDK uses [Zod](https://zod.dev/) schemas and the `guide()` helper to define generation constraints. This is equivalent to the Python SDK's `@generable` decorator and `fm.guide()`.
+The SDK uses [Zod](https://zod.dev/) schemas and the `guide()` helper to define generation constraints. This is equivalent to the Python SDK's `@generable` decorator and `fm.guide()`. In TypeScript you get inferred types from Zod; in JavaScript you use the same runtime API without static types.
 
 ```typescript
 import fm from 'javascript-apple-fm-sdk';
@@ -236,7 +255,7 @@ git clone https://github.com/tariqwest/javascript-apple-fm-sdk
 cd javascript-apple-fm-sdk
 ```
 
-2. Initialize the upstream submodule, install dependencies, and build
+2. Initialize the upstream submodule, install dependencies, and build native bits
 
 ```bash
 git submodule update --init --recursive
@@ -245,9 +264,9 @@ bun run verify:headers
 bun run build:all
 ```
 
-This compiles the Swift `foundation-models-c` dylib, the Rust N-API addon, and the TypeScript SDK.
+This compiles the Swift `foundation-models-c` dylib, the Rust N-API addon, and (via `tsc`) the published `dist/` JS + types. **You do not need `tsc` just to try the SDK from this repo**—see step 5.
 
-4. Run the test suite
+3. Run the test suite (Bun’s built-in test runner)
 
 ```bash
 bun run test
@@ -259,28 +278,42 @@ To run tests that exercise the native FFI layer (requires a macOS 26+ machine wi
 FM_NATIVE=1 bun run test
 ```
 
-5. Type-check the project
+4. Type-check the project
 
 ```bash
 bun run check
 ```
 
-6. Smoke-check under Bun or Node (tsx runs TypeScript sources directly; no `tsc` emit required)
+5. Run TypeScript sources without compiling
+
+Bun executes `.ts` directly. On Node, use **tsx** (devDependency) the same way—no `dist/` emit required:
 
 ```bash
-bun run start          # Bun
-bun run start:node     # Node via tsx
-bun run example        # Bun example
-bun run example:node   # Node/tsx example
+bun run start          # Bun → src/entry.ts
+bun run start:node     # Node + tsx → src/entry.ts
+bun run example        # Bun → examples/simple-inference.ts
+bun run example:node   # Node + tsx → examples/simple-inference.ts
+
+# or ad hoc:
+npx tsx examples/streaming.ts
+npx tsx src/entry.ts
 ```
 
-Bun remains the primary toolchain for install, test, and build. Use the `:node` scripts when you need a Node.js runtime without compiling to `dist/` first. Published packages still ship compiled `dist/` for production consumers.
+6. Optional: emit `dist/` for a local Node consumer that imports the package like npm would
+
+```bash
+bun run build          # tsc only (native artifacts already built above)
+node --input-type=module -e "import fm from './dist/index.js'; console.log(fm.isNativeAvailable())"
+```
+
+**Toolchain summary:** Bun is primary for install, test, and native builds. Node is fully supported at runtime via the N-API addon. For day-to-day JS/TS development against this repo, prefer Bun or **Node + tsx** so you are not blocked on `tsc`.
 
 ## Key Differences from the Python SDK
 
-- **Runtime**: The TypeScript SDK runs on both [Bun](https://bun.sh/) and Node.js via the Rust N-API addon in `native/` (built with `bun run build:napi`). Both runtimes load the same `.node` artifact through the `NativeBindings` abstraction.
-- **Generables**: Python uses a `@fm.generable` class decorator; TypeScript uses a `fm.generable(zodSchema)` factory function because decorators are less idiomatic in TypeScript.
-- **Schema constraints**: Python uses `fm.guide("description", range=(0, 20))`; TypeScript uses `fm.guide(z.number(), { description: "Age in years", range: [0, 20] })`.
+- **Runtime**: Runs on both [Bun](https://bun.sh/) and [Node.js](https://nodejs.org/) via the Rust N-API addon in `native/` (built with `bun run build:napi`). Both load the same `.node` artifact through the `NativeBindings` abstraction. Local TypeScript can be executed with Bun or Node+tsx without a separate compile step.
+- **Language**: Implemented in TypeScript; published as ESM JavaScript + declaration files. Plain JavaScript projects consume the npm package normally.
+- **Generables**: Python uses a `@fm.generable` class decorator; JS/TS uses a `fm.generable(zodSchema)` factory function.
+- **Schema constraints**: Python uses `fm.guide("description", range=(0, 20))`; JS/TS uses `fm.guide(z.number(), { description: "Age in years", range: [0, 20] })`.
 - **Tool return values**: Tools in both SDKs return strings that are passed back to the model.
 
 ## Contributing
@@ -303,18 +336,18 @@ This project is not yet taking contributions. Stay tuned!
 Maintainers can prepare a release tarball with:
 
 ```bash
-bun run build:release   # build all artifacts + verify package contents
-npm pack --dry-run      # preview the tarball
+bun run build:release                    # headers + native + tsc + package verify
+npm pack --dry-run --ignore-scripts      # preview the tarball
 ```
 
-To publish (requires [GitHub CLI](https://cli.github.com/) authenticated via `gh auth login`):
+To publish (requires [GitHub CLI](https://cli.github.com/) via `gh auth login` and `npm login`):
 
 ```bash
-chmod +x scripts/release.sh
-./scripts/release.sh patch   # or minor / major
+./scripts/release.sh current --yes   # first publish of package.json version
+./scripts/release.sh patch --yes     # bump patch, npm publish, tag, GitHub release
 ```
 
-This bumps the version, publishes to npm, pushes the git tag, and creates a [GitHub Release](https://github.com/tariqwest/javascript-apple-fm-sdk/releases) with the npm tarball attached.
+This publishes to npm (unless `--github-only`), pushes the git tag, and creates a [GitHub Release](https://github.com/tariqwest/javascript-apple-fm-sdk/releases) with the npm tarball attached.
 
 ## License
 
