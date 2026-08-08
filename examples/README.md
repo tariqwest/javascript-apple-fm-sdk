@@ -24,7 +24,7 @@ bun run build:napi
 ```bash
 bun run examples/simple-inference.ts
 # or with Node.js
-FM_NATIVE=1 node examples/simple-inference.ts
+bun run example:node
 ```
 
 ### Streaming response
@@ -32,7 +32,7 @@ FM_NATIVE=1 node examples/simple-inference.ts
 ```bash
 bun run examples/streaming.ts
 # or with Node.js
-FM_NATIVE=1 node examples/streaming.ts
+tsx examples/streaming.ts
 ```
 
 ### Transcript processing
@@ -47,3 +47,24 @@ bun run examples/transcript-processing.ts path/to/transcript.json
 - `simple-inference.ts` — Check model availability, create a session, and have a multi-turn conversation.
 - `streaming.ts` — Stream a response from the model chunk by chunk.
 - `transcript-processing.ts` — Load a transcript exported from a Swift app, analyze its structure, and restore it into a new session.
+- `image-prompt.ts` — Multimodal prompt with `ImageAttachment`.
+- `token-budget.ts` — Compare `tokenCount()` against `getContextSize()` before generating.
+- `chat-repl.ts` — Interactive multi-turn chat with `/save` and `/load` transcript round-trip.
+
+### Image prompt
+
+```bash
+bun run examples/image-prompt.ts /path/to/image.png
+```
+
+### Token budget
+
+```bash
+bun run examples/token-budget.ts
+```
+
+### Chat REPL
+
+```bash
+bun run examples/chat-repl.ts
+```
