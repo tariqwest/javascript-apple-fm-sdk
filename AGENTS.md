@@ -16,6 +16,12 @@ bun run check              # Type check (tsc --noEmit)
 bun run test               # Run all tests (bun:test)
 FM_NATIVE=1 bun run test   # Run all tests including native FFI integration tests
 npm pack                   # Create release tarball (runs prepack → build:release)
+
+# Bun is primary for dev. Node/tsx runs TypeScript sources without tsc emit:
+bun run start              # smoke entry (Bun)
+bun run start:node         # smoke entry (Node via tsx)
+bun run example            # examples/simple-inference.ts (Bun)
+bun run example:node       # same example under Node/tsx
 ```
 
 ### npm Publishing
@@ -68,6 +74,7 @@ FM_NATIVE=1 node -e "
 - **FFI Layer**: The Rust N-API addon in `build/apple_fm_sdk_napi.node` loads `libFoundationModels.dylib` compiled from `foundation-models-c`; works under both Bun and Node.js
 - **Abstraction**: `src/ffi/native.ts` provides runtime-agnostic NativeBindings interface
 - **Guided Generation**: Zod schemas + `guide()` helper (TypeScript-idiomatic equivalent of Python's `@generable` + `fm.guide()`)
+- **Entrypoints**: library API is `src/index.ts` (published as `dist/`). Runnable smoke entry is `src/entry.ts` (`bun run start` / `bun run start:node` via tsx).
 - **Tests**: `bun:test`. Pure logic tests run everywhere; FFI tests gated by `FM_NATIVE` env var
 
 ## Test Categories

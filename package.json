@@ -12,6 +12,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./entry": {
+      "types": "./dist/entry.d.ts",
+      "import": "./dist/entry.js",
+      "default": "./dist/entry.js"
     }
   },
   "files": [
@@ -34,7 +39,13 @@
     "test:watch": "bun test --watch --timeout 60000",
     "test:unit": "bun test --timeout 60000",
     "clean": "rm -rf dist",
-    "clean:all": "rm -rf dist build"
+    "clean:all": "rm -rf dist build",
+    "start": "bun run src/entry.ts",
+    "start:node": "tsx src/entry.ts",
+    "example": "bun run examples/simple-inference.ts",
+    "example:node": "tsx examples/simple-inference.ts",
+    "validate:readme": "bun run scripts/validate-readme-examples.ts",
+    "validate:readme:node": "tsx scripts/validate-readme-examples.ts"
   },
   "keywords": [
     "apple",
@@ -76,6 +87,7 @@
   "devDependencies": {
     "@types/bun": "^1.3.14",
     "@types/node": "^22.0.0",
+    "tsx": "^4.23.11",
     "typescript": "^5.8.3"
   }
 }

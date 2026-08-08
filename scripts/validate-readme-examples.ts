@@ -1,10 +1,10 @@
 /**
  * Validates README.md code examples against the live SDK.
  *
- * Run: bun scripts/validate-readme-examples.ts
+ * Run: bun run validate:readme  (or bun run validate:readme:node)
  */
 
-import fm from "../dist/index.js";
+import fm from "../src/index.js";
 import z from "zod";
 
 const results: Array<{ name: string; ok: boolean; error?: string; skipped?: boolean }> = [];

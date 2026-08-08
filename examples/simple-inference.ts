@@ -10,6 +10,7 @@ import {
   SystemLanguageModel,
   LanguageModelSession,
 } from "../src/index.js";
+import { isMainModule } from "../src/is-main.js";
 
 async function main() {
   console.log("=== Simple Inference Example ===\n");
@@ -43,7 +44,7 @@ async function main() {
   console.log(`Assistant: ${followUpResponse}\n`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main().catch((error) => {
     console.error(error);
     process.exit(1);

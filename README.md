@@ -259,6 +259,17 @@ FM_NATIVE=1 bun run test
 bun run check
 ```
 
+6. Smoke-check under Bun or Node (tsx runs TypeScript sources directly; no `tsc` emit required)
+
+```bash
+bun run start          # Bun
+bun run start:node     # Node via tsx
+bun run example        # Bun example
+bun run example:node   # Node/tsx example
+```
+
+Bun remains the primary toolchain for install, test, and build. Use the `:node` scripts when you need a Node.js runtime without compiling to `dist/` first. Published packages still ship compiled `dist/` for production consumers.
+
 ## Key Differences from the Python SDK
 
 - **Runtime**: The TypeScript SDK runs on both [Bun](https://bun.sh/) and Node.js via the Rust N-API addon in `native/` (built with `bun run build:napi`). Both runtimes load the same `.node` artifact through the `NativeBindings` abstraction.

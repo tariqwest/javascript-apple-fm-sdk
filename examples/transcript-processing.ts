@@ -13,6 +13,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import { isMainModule } from "../src/is-main.js";
 
 interface TranscriptContent {
   type?: string;
@@ -346,7 +347,7 @@ async function main(): Promise<void> {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main().catch((error) => {
     console.error(error);
     process.exit(1);

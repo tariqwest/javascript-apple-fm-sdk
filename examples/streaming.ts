@@ -10,6 +10,7 @@ import {
   SystemLanguageModel,
   LanguageModelSession,
 } from "../src/index.js";
+import { isMainModule } from "../src/is-main.js";
 
 async function main() {
   console.log("=== Streaming Response Example ===\n");
@@ -45,7 +46,7 @@ async function main() {
   console.log("\n");
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   main().catch((error) => {
     console.error(error);
     process.exit(1);
