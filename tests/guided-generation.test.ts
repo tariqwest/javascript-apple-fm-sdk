@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import z from "zod";
 import { generable, GeneratedContent, GenerationID } from "../src/generable.js";
 import { guide } from "../src/generation-guide.js";

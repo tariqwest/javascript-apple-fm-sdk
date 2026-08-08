@@ -13,7 +13,7 @@ bun run build              # Compile TypeScript
 bun run build:all          # Build native + TypeScript
 bun run build:release      # Full release build + package verification
 bun run check              # Type check (tsc --noEmit)
-bun run test               # Run all tests via Vitest
+bun run test               # Run all tests (bun:test)
 FM_NATIVE=1 bun run test   # Run all tests including native FFI integration tests
 npm pack                   # Create release tarball (runs prepack → build:release)
 ```
@@ -68,7 +68,7 @@ FM_NATIVE=1 node -e "
 - **FFI Layer**: The Rust N-API addon in `build/apple_fm_sdk_napi.node` loads `libFoundationModels.dylib` compiled from `foundation-models-c`; works under both Bun and Node.js
 - **Abstraction**: `src/ffi/native.ts` provides runtime-agnostic NativeBindings interface
 - **Guided Generation**: Zod schemas + `guide()` helper (TypeScript-idiomatic equivalent of Python's `@generable` + `fm.guide()`)
-- **Tests**: Vitest. Pure logic tests run everywhere; FFI tests gated by `FM_NATIVE` env var
+- **Tests**: `bun:test`. Pure logic tests run everywhere; FFI tests gated by `FM_NATIVE` env var
 
 ## Test Categories
 

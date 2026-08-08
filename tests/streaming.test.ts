@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 
 // Integration tests requiring native bindings
 describe.skipIf(!process.env.FM_NATIVE)("Streaming responses (native)", () => {

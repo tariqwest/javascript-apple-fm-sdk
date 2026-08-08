@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import { Tool } from "../src/tool.js";
 import { GeneratedContent } from "../src/generable.js";
 import {

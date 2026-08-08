@@ -7,7 +7,7 @@
  * Apple Intelligence.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 
 // E2E tests requiring the on-device model.
 describe.skipIf(!process.env.FM_NATIVE)("Python SDK examples (e2e)", () => {

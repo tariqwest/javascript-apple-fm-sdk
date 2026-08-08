@@ -12,7 +12,7 @@ Translate the `python-apple-fm-sdk` into a TypeScript SDK, aiming for a near 1-t
 |----------|-----------------|-----------|
 | FFI approach | Rust N-API addon behind a `NativeBindings` abstraction layer | Direct binding to the existing `foundation-models-c` dylib; works under both Bun and Node.js without changing the public API |
 | Generable equivalent | Zod schemas + `guide()` helper | TypeScript-idiomatic, gives strong inference, and matches the `apple-on-device-ai` reference pattern |
-| Test runner | Vitest | Fast, Jest-compatible API, works well with both Bun and Node |
+| Test runner | bun:test | Fast, Jest-compatible API, works well with both Bun and Node |
 | Package manager | Bun | Chosen to match the FFI runtime and the `bun:ffi` dependency |
 
 ## Architecture
@@ -39,7 +39,7 @@ src/
 
 ## Implementation Phases (TDD)
 
-1. **Phase 0 — Scaffolding** (`package.json`, `tsconfig.json`, `vitest.config.ts`, `build.sh`, `.gitignore`)
+1. **Phase 0 — Scaffolding** (`package.json`, `tsconfig.json`, `bun test`, `build.sh`, `.gitignore`)
 2. **Phase 1 — Foundation** (`errors.ts`, `ffi/types.ts`, `ffi/native.ts`, `ffi/managed-object.ts`, `type-conversion.ts`)
 3. **Phase 2 — Core** (`core.ts`, `generation-options.ts`)
 4. **Phase 3 — Session & Prompt** (`session.ts`, `prompt.ts`)
@@ -52,13 +52,13 @@ Tests were written before implementations for each phase (e.g., `errors.test.ts`
 
 ## Testing
 
-- **Test runner**: Vitest
+- **Test runner**: `bun:test`
 - **Total tests**: 118
   - 81 passing (pure logic)
   - 30 skipped (native FFI integration tests, gated by `FM_NATIVE=1`)
   - 7 todo (token counting async callbacks)
 - **Type check**: `tsc --noEmit` passes cleanly
-- **Validation**: `npx vitest run` and `bun run check` both succeed
+- **Validation**: `bun test` and `bun run check` both succeed
 
 ## Known Limitations / Next Steps
 

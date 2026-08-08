@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import { SimpleCalculatorTool, GetUserInfoTool } from "./helpers/tools.js";
 import { Cat } from "./helpers/schemas.js";
 
