@@ -42,7 +42,7 @@ export interface GuideConstraints {
 // --- Guided Zod type ---
 
 /** Symbol used to attach guide metadata to Zod schemas. */
-export const GUIDE_META = Symbol.for("apple-fm-sdk:guide");
+export const GUIDE_META = Symbol.for("javascript-apple-fm-sdk:guide");
 
 export interface GuideMeta {
   description?: string;

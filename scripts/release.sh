@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prepare and publish apple-fm-sdk to npm and GitHub Releases.
+# Prepare and publish javascript-apple-fm-sdk to npm and GitHub Releases.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -27,7 +27,7 @@ package_version() {
 }
 
 cleanup_release_artifacts() {
-  rm -f apple-fm-sdk-*.tgz
+  rm -f javascript-apple-fm-sdk-*.tgz
 }
 
 BRANCH="$(git branch --show-current)"
@@ -71,7 +71,7 @@ git tag "${TAG}"
 echo "Packing release tarball..."
 cleanup_release_artifacts
 npm pack
-TARBALL="apple-fm-sdk-${VERSION}.tgz"
+TARBALL="javascript-apple-fm-sdk-${VERSION}.tgz"
 if [[ ! -f "$TARBALL" ]]; then
   echo "Error: expected tarball ${TARBALL} not found after npm pack" >&2
   exit 1
@@ -91,7 +91,7 @@ if gh release view "${TAG}" >/dev/null 2>&1; then
   gh release upload "${TAG}" "${TARBALL}" --clobber
 else
   gh release create "${TAG}" \
-    --title "apple-fm-sdk ${TAG}" \
+    --title "javascript-apple-fm-sdk ${TAG}" \
     --generate-notes \
     "${TARBALL}"
 fi
@@ -103,5 +103,5 @@ trap - EXIT
 
 echo ""
 echo "Release complete:"
-echo "  npm:    apple-fm-sdk@${VERSION}"
+echo "  npm:    javascript-apple-fm-sdk@${VERSION}"
 echo "  github: ${RELEASE_URL}"

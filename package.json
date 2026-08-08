@@ -1,7 +1,7 @@
 {
-  "name": "apple-fm-sdk",
+  "name": "javascript-apple-fm-sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for Apple's on-device Foundation Models (SystemLanguageModel)",
+  "description": "JavaScript/TypeScript SDK for Apple's on-device Foundation Models (SystemLanguageModel)",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -51,11 +51,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tariqwest/ts-apple-fm-sdk.git"
+    "url": "git+https://github.com/tariqwest/javascript-apple-fm-sdk.git"
   },
-  "homepage": "https://github.com/tariqwest/ts-apple-fm-sdk#readme",
+  "homepage": "https://github.com/tariqwest/javascript-apple-fm-sdk#readme",
   "bugs": {
-    "url": "https://github.com/tariqwest/ts-apple-fm-sdk/issues"
+    "url": "https://github.com/tariqwest/javascript-apple-fm-sdk/issues"
   },
   "publishConfig": {
     "access": "public"

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "apple-fm-sdk",
+      "name": "javascript-apple-fm-sdk",
       "dependencies": {
         "zod": "^3.25.67",
         "zod-to-json-schema": "^3.24.5",

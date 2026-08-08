@@ -34,9 +34,9 @@ and Apple's [Human Interface Guidelines on Generative AI](https://developer.appl
 ## Installation
 
 ```bash
-npm install apple-fm-sdk
+npm install javascript-apple-fm-sdk
 # or
-bun add apple-fm-sdk
+bun add javascript-apple-fm-sdk
 ```
 
 The published package ships prebuilt native artifacts for **macOS arm64** (`build/libFoundationModels.dylib` and `build/apple_fm_sdk_napi.node`). No postinstall build step is required on supported platforms.
@@ -53,7 +53,7 @@ To install from source or contribute, see [Development Installation](#developmen
 ## Basic usage
 
 ```typescript
-import fm from "apple-fm-sdk";
+import fm from 'javascript-apple-fm-sdk';
 
 async function main() {
     // Get the default system foundation model
@@ -81,7 +81,7 @@ await main();
 > **Note:** `streamResponse` yields **cumulative snapshots** (the full response generated so far), not deltas. To print incrementally, slice off the portion you have already seen.
 
 ```typescript
-import fm from "apple-fm-sdk";
+import fm from 'javascript-apple-fm-sdk';
 
 const model = new fm.SystemLanguageModel();
 const [isAvailable] = model.isAvailable();
@@ -102,7 +102,7 @@ if (isAvailable) {
 The TypeScript SDK uses [Zod](https://zod.dev/) schemas and the `guide()` helper to define generation constraints. This is equivalent to the Python SDK's `@generable` decorator and `fm.guide()`.
 
 ```typescript
-import fm from "apple-fm-sdk";
+import fm from 'javascript-apple-fm-sdk';
 import z from "zod";
 
 const Cat = fm.generable(
@@ -141,7 +141,7 @@ await generateCat();
 Define tools by extending the `Tool` class. The model can invoke them during a conversation.
 
 ```typescript
-import fm from "apple-fm-sdk";
+import fm from 'javascript-apple-fm-sdk';
 import z from "zod";
 
 const WeatherParams = fm.generable(
@@ -182,7 +182,7 @@ if (isAvailable) {
 ### Generation options
 
 ```typescript
-import fm from "apple-fm-sdk";
+import fm from 'javascript-apple-fm-sdk';
 
 const options = new fm.GenerationOptions({
     temperature: 0.7,
@@ -228,8 +228,8 @@ If you need to modify the SDK or install from source:
 1. Get the code
 
 ```bash
-git clone https://github.com/tariqwest/ts-apple-fm-sdk
-cd ts-apple-fm-sdk
+git clone https://github.com/tariqwest/javascript-apple-fm-sdk
+cd javascript-apple-fm-sdk
 ```
 
 2. Install dependencies and build all artifacts
@@ -297,7 +297,7 @@ chmod +x scripts/release.sh
 ./scripts/release.sh patch   # or minor / major
 ```
 
-This bumps the version, publishes to npm, pushes the git tag, and creates a [GitHub Release](https://github.com/tariqwest/ts-apple-fm-sdk/releases) with the npm tarball attached.
+This bumps the version, publishes to npm, pushes the git tag, and creates a [GitHub Release](https://github.com/tariqwest/javascript-apple-fm-sdk/releases) with the npm tarball attached.
 
 ## License
 

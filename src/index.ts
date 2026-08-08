@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * import fm from "apple-fm-sdk";
+ * import fm from 'javascript-apple-fm-sdk';
  * import z from "zod";
  *
  * const model = new fm.SystemLanguageModel();

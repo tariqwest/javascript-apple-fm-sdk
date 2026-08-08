@@ -1,6 +1,6 @@
-# ts-apple-fm-sdk
+# javascript-apple-fm-sdk
 
-TypeScript SDK for Apple's on-device Foundation Models (SystemLanguageModel / Apple Intelligence).
+JavaScript/TypeScript SDK for Apple's on-device Foundation Models (SystemLanguageModel / Apple Intelligence).
 
 > For a detailed readout of how this project was planned and executed, see [.agents/implementation-readout.md](.agents/implementation-readout.md). This file is for quick project context only.
 
