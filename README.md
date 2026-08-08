@@ -29,6 +29,23 @@ To learn about practical strategies you can implement in code, **check out:**
 [Improving the safety of generative model output](https://developer.apple.com/documentation/foundationmodels/improving-the-safety-of-generative-model-output)
 and Apple's [Human Interface Guidelines on Generative AI](https://developer.apple.com/design/human-interface-guidelines/generative-ai).
 
+## Projects built on this SDK
+
+Higher-level tools that depend on `javascript-apple-fm-sdk` for in-process on-device inference:
+
+- [**fm-server**](https://github.com/tariqwest/fm-server) — OpenAI-compatible HTTP server and CLI for Apple Intelligence. The **system** backend uses this SDK in-process (N-API / Foundation Models); the **pcc** backend pairs with [`fm-access-pcc`](https://github.com/tariqwest/fm-access-PCC).
+- [**fm-acp**](https://github.com/tariqwest/fm-acp) — [Agent Client Protocol](https://agentclientprotocol.com/) stdio adapter for Apple Foundation Models (routes through `fm serve` / related backends).
+
+## Sibling projects (used alongside)
+
+These are not replacements for this library; they are commonly combined with it in the same stack:
+
+- [**fm-access-pcc**](https://github.com/tariqwest/fm-access-PCC) — TypeScript library/REST access to Foundation Models including **Private Cloud Compute (PCC)** paths; used with `fm-server` when you need PCC in addition to the on-device system model this SDK drives.
+- [**Foundation-Models-Framework-CLI (`afm`)**](https://github.com/rudrankriyam/Foundation-Models-Framework-CLI) — Swift CLI with `afm serve`, schema/tool helpers, and workbench; useful next to this SDK for CLI workflows or an alternate local OpenAI-compatible endpoint.
+- [**FoundationModelsKit**](https://github.com/rryam/FoundationModelsKit) — Swift kit underlying much of the `afm` tooling stack.
+
+For broader ecosystem links (upstream Python SDK, prior TS experiments, etc.), see [Reference & Inspiration](#reference--inspiration).
+
 ## Requirements
 
 - macOS 26.0+
@@ -322,13 +339,31 @@ This project is not yet taking contributions. Stay tuned!
 
 ## Reference & Inspiration
 
-- [Python SDK](https://github.com/apple/python-apple-fm-sdk)
-- [Swift SDK](https://github.com/apple/swift-apple-fm-sdk)
-- [apple-on-device-ai](https://github.com/meridius-labs/apple-on-device-ai)
-- [apfel](https://github.com/Arthur-Ficial/apfel)
-- [tsfm](https://github.com/codybrom/tsfm)
-- [apfel-plus](https://github.com/tariqwest/apfel-plus)
-- [afm-js](https://github.com/tariqwest/afm-js)
+Projects and docs that informed this SDK (API parity, native ABI, tooling, or adjacent ecosystem):
+
+### Upstream & ABI
+
+- [apple/python-apple-fm-sdk](https://github.com/apple/python-apple-fm-sdk) — primary API source of truth (vendored as `reference/python-apple-fm-sdk`)
+- [foundation-models-c](https://github.com/apple/python-apple-fm-sdk/tree/main/foundation-models-c) — C bindings / dylib ABI used by this package’s N-API layer
+- [Apple Foundation Models documentation](https://developer.apple.com/documentation/foundationmodels) — system framework docs
+- [Improving the safety of generative model output](https://developer.apple.com/documentation/foundationmodels/improving-the-safety-of-generative-model-output)
+- [HIG: Generative AI](https://developer.apple.com/design/human-interface-guidelines/generative-ai)
+
+### Overlapping tooling & kits
+
+- [rudrankriyam/Foundation-Models-Framework-CLI](https://github.com/rudrankriyam/Foundation-Models-Framework-CLI) (`afm`) — Swift CLI, OpenAI-compatible `afm serve`, schema/tool helpers, workbench
+- [rryam/FoundationModelsKit](https://github.com/rryam/FoundationModelsKit) — Swift kit used by the `afm` CLI stack
+- [meridius-labs/apple-on-device-ai](https://github.com/meridius-labs/apple-on-device-ai) — prior Bun/Node bindings and Vercel AI SDK-oriented patterns
+- [anthropics/ClaudeForFoundationModels](https://github.com/anthropics/ClaudeForFoundationModels) — Claude on Apple Foundation Models infrastructure (adjacent product)
+
+### Other JS/TS & community explorations
+
+- [Arthur-Ficial/apfel](https://github.com/Arthur-Ficial/apfel)
+- [codybrom/tsfm](https://github.com/codybrom/tsfm)
+- [tariqwest/apfel-plus](https://github.com/tariqwest/apfel-plus)
+- [tariqwest/afm-js](https://github.com/tariqwest/afm-js)
+
+Pin details for the Python SDK / `foundation-models-c` revision we track: [reference/UPSTREAM.md](reference/UPSTREAM.md).
 
 
 ## Publishing
