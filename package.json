@@ -31,7 +31,7 @@
     "build:native": "./build.sh",
     "build:napi": "cd native && cargo build --release && cp target/release/libapple_fm_sdk_napi.dylib ../build/apple_fm_sdk_napi.node",
     "build:all": "bun run build:native && bun run build:napi && bun run build",
-    "build:release": "bun run build:all && bun run check && node scripts/verify-package.mjs",
+    "build:release": "bun run verify:headers && bun run build:all && bun run check && node scripts/verify-package.mjs",
     "prepack": "bun run build:release",
     "pack:check": "npm pack --dry-run",
     "check": "tsc --noEmit",
@@ -45,7 +45,8 @@
     "example": "bun run examples/simple-inference.ts",
     "example:node": "tsx examples/simple-inference.ts",
     "validate:readme": "bun run scripts/validate-readme-examples.ts",
-    "validate:readme:node": "tsx scripts/validate-readme-examples.ts"
+    "validate:readme:node": "tsx scripts/validate-readme-examples.ts",
+    "verify:headers": "node scripts/verify-foundation-models-headers.mjs"
   },
   "keywords": [
     "apple",
