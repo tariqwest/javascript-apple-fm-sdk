@@ -237,12 +237,32 @@ export interface NativeBindings {
 }
 
 let _native: NativeBindings | null = null;
+/** Bumped whenever bindings are replaced so stale FinalizationRegistry jobs no-op. */
+let _nativeEpoch = 0;
+
+/** Current native-bindings generation (for ManagedObject finalizers). */
+export function getNativeBindingsEpoch(): number {
+  return _nativeEpoch;
+}
+
+/**
+ * Inject native bindings for unit tests (no dylib required).
+ * Pass `null` to clear the override so the next `getNativeBindings()` reload
+ * uses the real N-API addon again.
+ *
+ * @internal
+ */
+export function setNativeBindingsForTests(bindings: NativeBindings | null): void {
+  _native = bindings;
+  _nativeEpoch += 1;
+}
 
 export function getNativeBindings(): NativeBindings {
   if (_native) return _native;
 
   const addon = require(findNodeAddon()) as any;
 
+  _nativeEpoch += 1;
   _native = {
     systemLanguageModelGetDefault: () => asPtr(addon.systemLanguageModelGetDefault()),
     systemLanguageModelCreate: (useCase, guardrails) => asPtr(addon.systemLanguageModelCreate(useCase, guardrails)),

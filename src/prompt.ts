@@ -85,19 +85,25 @@ export function composePrompt(prompt: Prompt): FMComposedPrompt {
     "composedPromptInitialize",
   );
 
-  const components = Array.isArray(prompt) ? prompt : [prompt];
+  try {
+    const components = Array.isArray(prompt) ? prompt : [prompt];
 
-  for (const component of components) {
-    if (typeof component === "string") {
-      native.composedPromptAddText(composedPtr, component);
-    } else if (component instanceof Attachment) {
-      component.addToComposedPrompt(composedPtr);
-    } else {
-      throw new PromptError(
-        `Invalid prompt component type: ${typeof component}`,
-      );
+    for (const component of components) {
+      if (typeof component === "string") {
+        native.composedPromptAddText(composedPtr, component);
+      } else if (component instanceof Attachment) {
+        component.addToComposedPrompt(composedPtr);
+      } else {
+        throw new PromptError(
+          `Invalid prompt component type: ${typeof component}`,
+        );
+      }
     }
-  }
 
-  return composedPtr;
+    return composedPtr;
+  } catch (error) {
+    // Match Python #18 hygiene: never leak a partially built composed prompt.
+    native.fmRelease(composedPtr);
+    throw error;
+  }
 }
