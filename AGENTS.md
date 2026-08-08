@@ -41,10 +41,12 @@ bun run example:node       # same example under Node/tsx
 The published tarball ships prebuilt `build/libFoundationModels.dylib` and `build/apple_fm_sdk_napi.node` for macOS arm64. Publishing must happen on a macOS 26+ machine with the reference `foundation-models-c` sources present.
 
 ```bash
-bun run build:release      # verify all artifacts
-npm pack --dry-run         # preview tarball contents
-gh auth login              # required once for GitHub Releases
-./scripts/release.sh patch # bump version, npm publish, git tag push, GitHub release
+bun run build:release         # verify headers + build all artifacts
+npm pack --dry-run --ignore-scripts
+gh auth login                 # GitHub Releases
+npm login                     # npm publish auth
+./scripts/release.sh current --yes   # first publish of package.json version
+./scripts/release.sh patch --yes     # bump patch + publish
 ```
 
 ### N-API Rust Addon (Node.js backend)

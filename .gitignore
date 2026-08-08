@@ -4,6 +4,7 @@ build/
 # npm pack / release script artifacts
 *.tgz
 apple-fm-sdk-*.tgz
+javascript-apple-fm-sdk-*.tgz
 *.dylib
 .DS_Store
 *.tsbuildinfo

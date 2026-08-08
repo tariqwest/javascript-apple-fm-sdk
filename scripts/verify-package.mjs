@@ -15,6 +15,8 @@ const require = createRequire(import.meta.url);
 const requiredPaths = [
   "dist/index.js",
   "dist/index.d.ts",
+  "dist/entry.js",
+  "dist/entry.d.ts",
   "build/apple_fm_sdk_napi.node",
   "build/libFoundationModels.dylib",
   "README.md",
