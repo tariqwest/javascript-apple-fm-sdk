@@ -152,7 +152,7 @@ export function generable<T extends ZodRawShape>(
       const fieldType = field as ZodTypeAny;
       const guideMeta = getGuideMeta(fieldType);
       let nestedType = unwrapZodType(fieldType);
-      while (nestedType instanceof z.ZodArray) nestedType = unwrapZodType(nestedType.element);
+      while (nestedType instanceof z.ZodArray) nestedType = unwrapZodType(nestedType.element as ZodTypeAny);
       const meta: PropertyMeta = {
         description: guideMeta?.description,
         guides: guideMeta?.constraints ?? {},

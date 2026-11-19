@@ -18,14 +18,13 @@ export function zodTypeToSwiftString(schema: ZodTypeAny): string {
   if (unwrapped instanceof z.ZodString) return "string";
   if (unwrapped instanceof z.ZodNumber) {
     // Check if it has an integer check
-    const checks = (unwrapped as any)._def?.checks as Array<{ kind: string }> | undefined;
-    const isInt = checks?.some((c) => c.kind === "int");
+    const isInt = unwrapped.isInt;
     return isInt ? "integer" : "number";
   }
   if (unwrapped instanceof z.ZodBoolean) return "boolean";
 
   if (unwrapped instanceof z.ZodArray) {
-    const elementType = zodTypeToSwiftString(unwrapped.element);
+    const elementType = zodTypeToSwiftString(unwrapped.element as ZodTypeAny);
     return `array<${elementType}>`;
   }
 
@@ -65,8 +64,8 @@ export function isZodArray(schema: ZodTypeAny): boolean {
  * Unwrap ZodOptional, ZodNullable, ZodDefault to get the inner type.
  */
 export function unwrapZodType(schema: ZodTypeAny): ZodTypeAny {
-  if (schema instanceof z.ZodOptional) return unwrapZodType(schema.unwrap());
-  if (schema instanceof z.ZodNullable) return unwrapZodType(schema.unwrap());
-  if (schema instanceof z.ZodDefault) return unwrapZodType(schema.removeDefault());
+  if (schema instanceof z.ZodOptional) return unwrapZodType(schema.unwrap() as ZodTypeAny);
+  if (schema instanceof z.ZodNullable) return unwrapZodType(schema.unwrap() as ZodTypeAny);
+  if (schema instanceof z.ZodDefault) return unwrapZodType(schema.unwrap() as ZodTypeAny);
   return schema;
 }
