@@ -1,6 +1,6 @@
 {
   "name": "javascript-apple-fm-sdk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "JavaScript/TypeScript SDK for Apple's on-device Foundation Models (SystemLanguageModel)",
   "type": "module",
   "main": "dist/index.js",
