@@ -58,8 +58,14 @@ export class GenerationSchema extends ManagedObject {
       if (!zodType) continue;
 
       const optional = isZodOptional(zodType as ZodTypeAny);
+      const referenceType = (type: ZodTypeAny): string => {
+        const unwrapped = unwrapZodType(type);
+        return isZodArray(unwrapped)
+          ? `array<${referenceType((unwrapped as any).element)}>`
+          : meta.nestedSchema!.name;
+      };
       const swiftType = meta.nestedSchema
-        ? meta.nestedSchema.name
+        ? referenceType(zodType as ZodTypeAny)
         : zodTypeToSwiftString(zodType as ZodTypeAny);
 
       const propRef = native.generationSchemaPropertyCreate(
@@ -122,7 +128,7 @@ function applyGuides(
   }
 
   if (guides.count !== undefined) {
-    native.generationSchemaPropertyAddCountGuide(propRef, guides.count, isArray);
+    native.generationSchemaPropertyAddCountGuide(propRef, guides.count, false);
   }
 
   if (guides.minItems !== undefined) {

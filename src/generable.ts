@@ -41,7 +41,7 @@ export class GenerationID {
 export class GeneratedContent {
   private _contentDict: Record<string, unknown>;
   readonly id: GenerationID;
-  private _ptr: FMGeneratedContentRef | null;
+  private _isComplete = true;
 
   constructor(
     contentDict?: Record<string, unknown>,
@@ -49,19 +49,16 @@ export class GeneratedContent {
     ptr?: FMGeneratedContentRef,
   ) {
     this.id = id ?? new GenerationID();
-    this._ptr = ptr ?? null;
-
-    if (contentDict) {
-      this._contentDict = contentDict;
-    } else if (this._ptr) {
-      // Read JSON from the C pointer and release it immediately.
+    if (ptr) {
       const native = getNativeBindings();
-      const jsonStr = native.generatedContentGetJSONString(this._ptr);
-      this._contentDict = JSON.parse(jsonStr) as Record<string, unknown>;
-      native.fmRelease(this._ptr);
-      this._ptr = null;
+      try {
+        this._isComplete = native.generatedContentIsComplete(ptr);
+        this._contentDict = contentDict ?? JSON.parse(native.generatedContentGetJSONString(ptr)) as Record<string, unknown>;
+      } finally {
+        native.fmRelease(ptr);
+      }
     } else {
-      this._contentDict = {};
+      this._contentDict = contentDict ?? {};
     }
   }
 
@@ -97,15 +94,7 @@ export class GeneratedContent {
 
   /** Whether the content is complete (not partially generated). */
   get isComplete(): boolean {
-    if (this._ptr) {
-      try {
-        const native = getNativeBindings();
-        return native.generatedContentIsComplete(this._ptr);
-      } catch {
-        return true;
-      }
-    }
-    return true;
+    return this._isComplete;
   }
 }
 
@@ -142,10 +131,11 @@ export interface GenerableSchema<T = unknown> {
  *   age: fm.guide(z.number().int(), { description: "Age in years", range: [0, 20] }),
  * }), "A cat profile");
  *
- * const cat = await session.respond("Generate a cat named Whiskers", {
+ * const content = await session.respond("Generate a cat named Whiskers", {
  *   generating: Cat,
  * });
- * console.log(cat.name); // typed as string
+ * const cat = Cat.parse(content);
+ * console.log(cat.name);
  * ```
  */
 export function generable<T extends ZodRawShape>(
@@ -155,21 +145,27 @@ export function generable<T extends ZodRawShape>(
   // Derive name from description or generate one
   const name = descriptionOrName ?? `GenerableSchema_${Date.now()}`;
   const description = descriptionOrName;
-  const shape = schema.shape;
-
-  // Collect nested generable schemas
-  const nestedSchemas: GenerationSchema[] = [];
-
-  // Extract property metadata from guide annotations
-  const properties = new Map<string, PropertyMeta>();
-  for (const [key, zodType] of Object.entries(shape)) {
-    const guideMeta = getGuideMeta(zodType as ZodTypeAny);
-    const meta: PropertyMeta = {
-      description: guideMeta?.description,
-      guides: guideMeta?.constraints ?? {},
-    };
-    properties.set(key, meta);
-  }
+  const buildSchema = (object: ZodObject<ZodRawShape>, schemaName: string, schemaDescription?: string): GenerationSchema => {
+    const properties = new Map<string, PropertyMeta>();
+    const nestedSchemas: GenerationSchema[] = [];
+    for (const [key, field] of Object.entries(object.shape)) {
+      const fieldType = field as ZodTypeAny;
+      const guideMeta = getGuideMeta(fieldType);
+      let nestedType = unwrapZodType(fieldType);
+      while (nestedType instanceof z.ZodArray) nestedType = unwrapZodType(nestedType.element);
+      const meta: PropertyMeta = {
+        description: guideMeta?.description,
+        guides: guideMeta?.constraints ?? {},
+      };
+      if (nestedType instanceof z.ZodObject) {
+        const nested = buildSchema(nestedType, `${schemaName}_${key}`);
+        meta.nestedSchema = nested;
+        nestedSchemas.push(nested, ...nested.nestedSchemas);
+      }
+      properties.set(key, meta);
+    }
+    return new GenerationSchema(schemaName, object.shape, properties, nestedSchemas, schemaDescription);
+  };
 
   // Cache the GenerationSchema (lazy)
   let _generationSchema: GenerationSchema | null = null;
@@ -181,13 +177,7 @@ export function generable<T extends ZodRawShape>(
 
     generationSchema(): GenerationSchema {
       if (!_generationSchema) {
-        _generationSchema = new GenerationSchema(
-          name,
-          shape as ZodRawShape,
-          properties,
-          nestedSchemas,
-          description,
-        );
+        _generationSchema = buildSchema(schema, name, description);
       }
       return _generationSchema;
     },

@@ -140,6 +140,24 @@ describe.skipIf(!process.env.FM_NATIVE)("Guided generation (native)", () => {
     expect(response).toBeDefined();
   });
 
+  it("generates nested objects and arrays", async () => {
+    const { LanguageModelSession } = await import("../src/session.js");
+    const schema = generable(z.object({
+      owner: z.object({ name: z.string() }),
+      pets: z.array(z.object({ name: z.string() })),
+    }), "NestedProfile");
+    const session = new LanguageModelSession();
+    try {
+      const content = await session.respond("Create a profile for Sam with a pet named Luna.", { generating: schema });
+      const result = schema.parse(content);
+      expect(typeof result.owner.name).toBe("string");
+      expect(Array.isArray(result.pets)).toBe(true);
+    } finally {
+      session.release();
+      schema.generationSchema().release();
+    }
+  });
+
   it("generates with anyOf guide", async () => {
     const { LanguageModelSession } = await import("../src/session.js");
     const { ProductAnyOfGuide } = await import("./helpers/schemas.js");
