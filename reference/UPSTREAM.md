@@ -6,9 +6,9 @@ This SDK tracks Apple’s Python Foundation Models SDK and its in-tree
 | Field | Value |
 |-------|--------|
 | Repository | https://github.com/apple/python-apple-fm-sdk |
-| Compatible with | **v0.2.1** + post-release fix **#18** |
-| Commit | `e868e60811aa0706feb2ccb33cfe7e27626287b7` |
-| Tag ancestry | `v0.2.1-1-ge868e60` (`Release composed_prompt pointer in all respond() paths (#18)`) |
+| Compatible with | **v0.2.2** |
+| Commit | `618da8f1256c6d8008573aacb29705db86c1b11f` |
+| Tag | `v0.2.2` |
 | Submodule path | `reference/python-apple-fm-sdk` |
 | C package path | `reference/python-apple-fm-sdk/foundation-models-c` |
 

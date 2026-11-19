@@ -1,9 +1,14 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, afterEach } from "bun:test";
+import { setNativeBindingsForTests } from "../src/ffi/native.js";
+import { createMockNative } from "./helpers/mock-native.js";
 import {
+  SystemLanguageModel,
   SystemLanguageModelUseCase,
   SystemLanguageModelGuardrails,
   SystemLanguageModelUnavailableReason,
 } from "../src/core.js";
+
+afterEach(() => setNativeBindingsForTests(null));
 
 describe("SystemLanguageModel enums", () => {
   it("SystemLanguageModelUseCase has expected values", () => {
@@ -21,6 +26,22 @@ describe("SystemLanguageModel enums", () => {
     expect(SystemLanguageModelUnavailableReason.DEVICE_NOT_ELIGIBLE).toBe(1);
     expect(SystemLanguageModelUnavailableReason.MODEL_NOT_READY).toBe(2);
     expect(SystemLanguageModelUnavailableReason.UNKNOWN).toBe(0xff);
+  });
+});
+
+describe("SystemLanguageModel variant", () => {
+  it("returns the display name or null when unavailable", () => {
+    const mock = createMockNative();
+    setNativeBindingsForTests(mock);
+    const model = new SystemLanguageModel();
+    expect(model.variant).toBeNull();
+    mock.systemLanguageModelGetVariantDisplayName = (ptr) => {
+      expect(ptr).toBe(model.ptr);
+      return "On-device model";
+    };
+    expect(model.variant).toEqual({ displayName: "On-device model" });
+    model.release();
+    expect(() => model.variant).toThrow();
   });
 });
 

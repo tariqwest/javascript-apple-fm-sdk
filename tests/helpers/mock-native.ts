@@ -26,6 +26,7 @@ export function createMockNative(overrides: Partial<NativeBindings> = {}): MockN
     systemLanguageModelCreate: () => nextPtr(),
     systemLanguageModelIsAvailable: () => ({ available: true }),
     systemLanguageModelGetContextSize: () => 4096,
+    systemLanguageModelGetVariantDisplayName: () => null,
 
     languageModelSessionCreateDefault: () => nextPtr(),
     languageModelSessionCreateFromSystemLanguageModel: () => nextPtr(),

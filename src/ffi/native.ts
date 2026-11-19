@@ -74,6 +74,7 @@ export interface NativeBindings {
   systemLanguageModelCreate(useCase: number, guardrails: number): Pointer;
   systemLanguageModelIsAvailable(model: Pointer): { available: boolean; reason?: number };
   systemLanguageModelGetContextSize(model: Pointer): number;
+  systemLanguageModelGetVariantDisplayName(model: Pointer): string | null;
 
   // --- Session ---
   languageModelSessionCreateDefault(): Pointer;
@@ -268,6 +269,7 @@ export function getNativeBindings(): NativeBindings {
     systemLanguageModelCreate: (useCase, guardrails) => asPtr(addon.systemLanguageModelCreate(useCase, guardrails)),
     systemLanguageModelIsAvailable: (model) => addon.systemLanguageModelIsAvailable(model),
     systemLanguageModelGetContextSize: (model) => addon.systemLanguageModelGetContextSize(model),
+    systemLanguageModelGetVariantDisplayName: (model) => addon.systemLanguageModelGetVariantDisplayName(model) ?? null,
 
     languageModelSessionCreateDefault: () => asPtr(addon.languageModelSessionCreateDefault()),
     languageModelSessionCreateFromSystemLanguageModel: (model, instructions, tools) =>

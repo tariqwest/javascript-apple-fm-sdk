@@ -51,6 +51,10 @@ const UNAVAILABLE_REASON_MAP: Record<number, SystemLanguageModelUnavailableReaso
 
 // --- Options ---
 
+export interface SystemLanguageModelVariant {
+  readonly displayName: string;
+}
+
 export interface SystemLanguageModelOptions {
   useCase?: SystemLanguageModelUseCase;
   guardrails?: SystemLanguageModelGuardrails;
@@ -94,6 +98,12 @@ export class SystemLanguageModel extends ManagedObject {
     const reasonCode = reason ?? 0xff;
     const mappedReason = UNAVAILABLE_REASON_MAP[reasonCode] ?? SystemLanguageModelUnavailableReason.UNKNOWN;
     return [false, mappedReason];
+  }
+
+  /** Model variant, or null when the OS or build SDK does not support it. */
+  get variant(): SystemLanguageModelVariant | null {
+    const displayName = getNativeBindings().systemLanguageModelGetVariantDisplayName(this.ptr);
+    return displayName ? { displayName } : null;
   }
 
   /** Get the model's maximum context window size in tokens. */

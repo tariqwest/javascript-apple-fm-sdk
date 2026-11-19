@@ -15,7 +15,7 @@ import { statusCodeToError, GenerationErrorCode } from "./errors.js";
 import { GenerationSchema } from "./generation-schema.js";
 import { GeneratedContent, type GenerableSchema } from "./generable.js";
 import type { Tool } from "./tool.js";
-import type { Transcript } from "./transcript.js";
+import { Transcript } from "./transcript.js";
 import { BridgedTool, createBridgedTool } from "./tool-bridge.js";
 
 // --- Options ---
@@ -39,26 +39,32 @@ export class LanguageModelSession extends ManagedObject {
   private _tools: Tool[] = [];
   private _bridgedTools: BridgedTool[] = [];
 
-  constructor(options?: LanguageModelSessionOptions) {
+  constructor(options?: LanguageModelSessionOptions, transcript?: Transcript) {
     const native = getNativeBindings();
-
     const tools = options?.tools ?? [];
-    const bridgedTools = tools.map((tool) => createBridgedTool(tool));
-
-    const modelPtr = options?.model?.ptr ?? null;
-
-    const ptr = requirePointer(
-      native.languageModelSessionCreateFromSystemLanguageModel(
-        modelPtr,
-        options?.instructions ?? null,
-        bridgedTools.map((t) => t.ptr),
-      ),
-      "languageModelSessionCreateFromSystemLanguageModel",
-    );
-
+    const bridgedTools: BridgedTool[] = [];
+    let ptr: Pointer;
+    try {
+      for (const tool of tools) bridgedTools.push(createBridgedTool(tool));
+      const modelPtr = options?.model?.ptr ?? null;
+      ptr = requirePointer(
+        transcript
+          ? native.languageModelSessionCreateFromTranscript(transcript.sessionPtr, modelPtr, bridgedTools.map((t) => t.ptr))
+          : native.languageModelSessionCreateFromSystemLanguageModel(modelPtr, options?.instructions ?? null, bridgedTools.map((t) => t.ptr)),
+        transcript ? "languageModelSessionCreateFromTranscript" : "languageModelSessionCreateFromSystemLanguageModel",
+      );
+    } catch (error) {
+      for (const tool of bridgedTools) tool.release();
+      throw error;
+    }
     super(ptr);
     this._tools = tools;
     this._bridgedTools = bridgedTools;
+  }
+
+  /** A view of the current session's conversation history. */
+  get transcript(): Transcript {
+    return new Transcript(this.ptr, this);
   }
 
   /** Whether a request is currently in progress. */
@@ -145,10 +151,9 @@ export class LanguageModelSession extends ManagedObject {
 
         if (status !== GenerationErrorCode.SUCCESS) {
           completed = true;
-          reject(statusCodeToError(status));
+          reject(statusCodeToError(status, text));
           return;
         }
-
         if (text === null) {
           // End of stream
           completed = true;
@@ -245,7 +250,7 @@ export class LanguageModelSession extends ManagedObject {
 
       const callback = (status: number, text: string | null) => {
         if (status !== GenerationErrorCode.SUCCESS) {
-          queue.push({ error: statusCodeToError(status) as Error });
+          queue.push({ error: statusCodeToError(status, text) as Error });
         } else if (text === null) {
           queue.push({ done: true });
         } else {
@@ -291,30 +296,6 @@ export class LanguageModelSession extends ManagedObject {
     transcript: Transcript,
     options?: { model?: SystemLanguageModel; tools?: Tool[] },
   ): LanguageModelSession {
-    const native = getNativeBindings();
-
-    const tools = options?.tools ?? [];
-    const bridgedTools = tools.map((tool) => createBridgedTool(tool));
-
-    const ptr = requirePointer(
-      native.languageModelSessionCreateFromTranscript(
-        transcript.sessionPtr,
-        options?.model?.ptr ?? null,
-        bridgedTools.map((t) => t.ptr),
-      ),
-      "languageModelSessionCreateFromTranscript",
-    );
-
-    const session = LanguageModelSession.__privateFromPtr(ptr);
-    session._tools = tools;
-    session._bridgedTools = bridgedTools;
-    return session;
-  }
-
-  /** @internal — used only by fromTranscript. */
-  private static __privateFromPtr(ptr: Pointer): LanguageModelSession {
-    const session = Object.create(LanguageModelSession.prototype) as LanguageModelSession;
-    (ManagedObject as any).call(session, ptr);
-    return session;
+    return new LanguageModelSession(options, transcript);
   }
 }

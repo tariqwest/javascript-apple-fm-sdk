@@ -23,6 +23,7 @@ extern "C" {
     fn FMSystemLanguageModelCreate(use_case: c_int, guardrails: c_int) -> *mut c_void;
     fn FMSystemLanguageModelIsAvailable(model: *mut c_void, unavailable_reason: *mut c_int) -> bool;
     fn FMSystemLanguageModelGetContextSize(model: *mut c_void) -> c_int;
+    fn FMSystemLanguageModelGetVariantDisplayName(model: *mut c_void) -> *mut c_char;
 
     // Session
     fn FMLanguageModelSessionCreateDefault() -> *mut c_void;
@@ -279,6 +280,12 @@ pub fn system_language_model_is_available(model: f64) -> napi::Result<ModelAvail
 #[napi]
 pub fn system_language_model_get_context_size(model: f64) -> i32 {
     unsafe { FMSystemLanguageModelGetContextSize(f64_to_ptr(model)) }
+}
+
+#[napi]
+pub fn system_language_model_get_variant_display_name(model: f64) -> Option<String> {
+    let ptr = unsafe { FMSystemLanguageModelGetVariantDisplayName(f64_to_ptr(model)) };
+    if ptr.is_null() { None } else { Some(take_c_string(ptr)) }
 }
 
 // --- Session ---
@@ -698,7 +705,14 @@ fn remove_string_callback(registry: &Mutex<HashMap<u64, StringCallback>>, id: u6
 
 fn marshal_text_response(status: c_int, content: *const c_char, length: size_t) -> String {
     if status != 0 {
-        return format!("{{\"type\":\"error\",\"payload\":{{\"status\":{}}}}}", status);
+        let description = if content.is_null() {
+            String::new()
+        } else if length == 0 {
+            unsafe { CStr::from_ptr(content).to_string_lossy().into_owned() }
+        } else {
+            unsafe { String::from_utf8_lossy(std::slice::from_raw_parts(content as *const u8, length)).into_owned() }
+        };
+        return serde_json::json!({"type": "error", "payload": {"status": status, "description": description}}).to_string();
     }
     if content.is_null() {
         return "{\"type\":\"done\"}".to_string();

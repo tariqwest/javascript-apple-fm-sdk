@@ -31,6 +31,7 @@ export {
   SystemLanguageModelGuardrails,
   SystemLanguageModelUnavailableReason,
   type SystemLanguageModelOptions,
+  type SystemLanguageModelVariant,
   type TokenCountInput,
   type TokenCountOptions,
 } from "./core.js";

@@ -5,18 +5,19 @@
  * `FoundationModels.Transcript`.
  */
 
-import { getNativeBindings } from "./ffi/native.js";
+import { getNativeBindings, requirePointer } from "./ffi/native.js";
+import { ManagedObject } from "./ffi/managed-object.js";
 import type { FMLanguageModelSessionRef } from "./ffi/types.js";
 export class Transcript {
   private _sessionPtr: FMLanguageModelSessionRef;
 
-  constructor(sessionPtr: FMLanguageModelSessionRef) {
+  constructor(sessionPtr: FMLanguageModelSessionRef, private readonly owner?: ManagedObject) {
     this._sessionPtr = sessionPtr;
   }
 
   /** The underlying session pointer (used by fromTranscript). */
   get sessionPtr(): FMLanguageModelSessionRef {
-    return this._sessionPtr;
+    return this.owner?.ptr ?? this._sessionPtr;
   }
 
   /**
@@ -24,7 +25,7 @@ export class Transcript {
    */
   async toDict(): Promise<Record<string, unknown>> {
     const native = getNativeBindings();
-    const jsonStr = native.languageModelSessionGetTranscriptJSONString(this._sessionPtr);
+    const jsonStr = native.languageModelSessionGetTranscriptJSONString(this.sessionPtr);
     return JSON.parse(jsonStr) as Record<string, unknown>;
   }
 
@@ -33,7 +34,7 @@ export class Transcript {
    */
   static async fromDict(dict: Record<string, unknown>): Promise<Transcript> {
     const native = getNativeBindings();
-    const sessionPtr = native.transcriptCreateFromJSONString(JSON.stringify(dict));
-    return new Transcript(sessionPtr);
+    const sessionPtr = requirePointer(native.transcriptCreateFromJSONString(JSON.stringify(dict)), "transcriptCreateFromJSONString");
+    return new Transcript(sessionPtr, new ManagedObject(sessionPtr));
   }
 }

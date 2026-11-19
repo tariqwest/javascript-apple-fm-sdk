@@ -41,7 +41,7 @@ export function dispatchResponseEvent(json: string, callback: ResponseCallback):
   } else if (event.type === "error") {
     callback(
       (event.payload?.status as number) ?? GenerationErrorCode.UNKNOWN_ERROR,
-      null,
+      (event.payload?.description as string | undefined) ?? null,
     );
   }
 }

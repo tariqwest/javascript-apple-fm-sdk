@@ -81,7 +81,9 @@ To install from source or contribute, see [Development Installation](#developmen
 
 ## Compatible upstream
 
-This release targets Apple’s [python-apple-fm-sdk](https://github.com/apple/python-apple-fm-sdk) **v0.2.1** plus commit `e868e60811aa0706feb2ccb33cfe7e27626287b7` (composed_prompt cleanup, PR #18). The C ABI comes from the vendored submodule at `reference/python-apple-fm-sdk/foundation-models-c`. See [reference/UPSTREAM.md](reference/UPSTREAM.md).
+This release targets Apple’s [python-apple-fm-sdk](https://github.com/apple/python-apple-fm-sdk) **v0.2.2** at `618da8f1256c6d8008573aacb29705db86c1b11f`. The C ABI comes from the vendored submodule at `reference/python-apple-fm-sdk/foundation-models-c`. See [reference/UPSTREAM.md](reference/UPSTREAM.md).
+
+`SystemLanguageModel.variant` exposes the model's `displayName` when supported by the macOS runtime and build SDK; otherwise it is `null`.
 
 ## Documentation
 
